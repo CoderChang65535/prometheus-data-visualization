@@ -1,0 +1,11 @@
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "vue": "^2.5.16"
+  },
+  "devDependencies": {
+    "echarts": "^4.0.4",
+    "v-charts": "^1.16.8"
+  }
+}
