@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>K8S Chart</title>
+</head>
+
+<body>
+<div id="app">
+    <ve-line :settings="cpuSettings" :data="cpu" :title="CPU使用率"></ve-line>
+</div>
+</body>
+</html>
+<script src="node_modules/vue/dist/vue.js"></script>
+<script src="node_modules/echarts/dist/echarts.min.js"></script>
+<script src="node_modules/v-charts/lib/index.min.js"></script>
+<script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="js/getData.js"></script>

@@ -7,9 +7,10 @@
  */
 
 require_once __DIR__.'/vendor/autoload.php';
-
+require_once __DIR__.'/DataHelper/CPUDataGetter.php';
 
 use \Dotenv\Dotenv;
+use \GuzzleHttp\Client;
 
 $env = new Dotenv(__DIR__);
 $env->load();
