@@ -14,12 +14,25 @@ $client = new GuzzleHttp\Client();
 if (isset($_GET['target'])) {
 
 
+  switch ($_GET['target']) {
+    case 'cpu':
+      $CPU = new \Coderzhang\DataGetter\CPUDataGetter(20);
+      print $CPU->getResult($client);
+      break;
+    case 'memory':
+      $memory = new \Coderzhang\DataGetter\MemoryDataGetter();
+      print $memory->getResult($client);
+      break;
+    case 'tcp':
+      $memory = new \Coderzhang\DataGetter\TCPDataGetter();
+      print $memory->getResult($client);
+      break;
+  }
+
 }
 
 //$res = $client->request('GET', $_ENV['API'], [
 //  'query' => 'query=rate(http_requests_total[10m])'
 //]);
 
-$CPU = new \Coderzhang\DataGetter\CPUDataGetter(20);
 
-print $CPU->getResult($client);

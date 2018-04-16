@@ -23,18 +23,18 @@ class CPUDataGetter extends DataHelper
 
     $result = array();
     for ($i = $this->density - 1; $i >= 0; $i--) {
-      $offset = $i * 1;
+      $offset = $i * 5;
       $res = $this->createQuery($client, $offset);
       $resource = json_decode($res->getBody())->data->result;
 
       $line = array();
       foreach ($resource as $item) {
-        if($item->metric->instance == $_ENV['MASTER_ALIAS']){
+        if ($item->metric->instance == $_ENV['MASTER_ALIAS']) {
           $item->metric->instance = $_ENV['MASTER'];
         }
         $key['column'][] = $item->metric->instance;
         $line[$item->metric->instance] = round($item->value[1] * 100, 2);
-        $line['time'] = date('H:i:s', $item->value[0] - 60 * $i);
+        $line['time'] = date('H:i:s', $item->value[0] - 5 * 60 * $i);
       }
       $result[] = $line;
     }

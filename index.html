@@ -3,11 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>K8S Chart</title>
+    <link rel="stylesheet" href="css/index.css" type="text/css">
 </head>
 
 <body>
 <div id="app">
-    <ve-line :settings="cpuSettings" :data="cpu" :title="CPU使用率"></ve-line>
+    <fieldset id="cpu">
+        <legend>各个节点CPU使用率(%)</legend>
+        <ve-line :settings="cpuSettings" :data="cpu"></ve-line>
+    </fieldset>
+    <br />
+    <fieldset id="memory">
+        <legend>各个worker的内存使用情况(MB)</legend>
+        <ve-bar :data="memory" :settings="memorySetting" :colors="memoryColors"></ve-bar>
+    </fieldset>
+    <br />
+    <fieldset id="tcp">
+        <legend>各个worker的TCP链接异常情况</legend>
+        <ve-pie v-for="i in tcpArr" :data="tcp[i]" :settings="tcpSetting[i]" :width="tcpWidth" class="tcp">
+            <p class="title tcp-title">{{tcp[i]["columns"][1]}}</p>
+        </ve-pie>
+    </fieldset>
 </div>
 </body>
 </html>

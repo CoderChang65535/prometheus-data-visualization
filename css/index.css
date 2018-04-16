@@ -1,0 +1,17 @@
+.title {
+    text-align: center;
+}
+
+.tcp-title {
+    margin-top: -5%;
+}
+
+.tcp {
+    float: left;
+    width: 50% !important;
+}
+
+fieldset > legend {
+    text-align: center;
+}
+
