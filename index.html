@@ -8,27 +8,39 @@
 
 <body>
 <div id="app">
-    <fieldset id="cpu">
-        <legend>各个节点CPU使用率(%)</legend>
-        <ve-line :settings="cpuSettings" :data="cpu"></ve-line>
-    </fieldset>
-    <br />
-    <fieldset id="memory">
-        <legend>各个worker的内存使用情况(MB)</legend>
-        <ve-bar :data="memory" :settings="memorySetting" :colors="memoryColors"></ve-bar>
-    </fieldset>
-    <br />
-    <fieldset id="tcp">
-        <legend>各个worker的TCP链接异常情况</legend>
-        <ve-pie v-for="i in tcpArr" :data="tcp[i]" :settings="tcpSetting[i]" :width="tcpWidth" class="tcp">
-            <p class="title tcp-title">{{tcp[i]["columns"][1]}}</p>
-        </ve-pie>
-    </fieldset>
+    <div id="cpu">
+        <fieldset>
+            <legend>各个节点CPU使用率(%)</legend>
+            <ve-line :settings="cpuSettings" :data="cpu">
+                <div class="data-empty">没有数据</div>
+            </ve-line>
+        </fieldset>
+    </div>
+    <br/>
+    <div id="memory">
+        <fieldset>
+            <legend>各个worker的内存使用情况(MB)</legend>
+            <ve-bar :data="memory" :settings="memorySetting" :colors="memoryColors"></ve-bar>
+        </fieldset>
+    </div>
+    <br/>
+    <div id="tcp">
+        <fieldset>
+            <legend>各个worker的TCP链接异常情况</legend>
+            <ve-pie v-for="i in tcpArr" :data="tcp[i]" :settings="tcpSetting[i]" :width="tcpWidth" class="tcp">
+                <p class="title tcp-title">{{tcp[i]["columns"][1]}}</p>
+            </ve-pie>
+        </fieldset>
+    </div>
 </div>
 </body>
 </html>
+
 <script src="node_modules/vue/dist/vue.js"></script>
 <script src="node_modules/echarts/dist/echarts.min.js"></script>
 <script src="node_modules/v-charts/lib/index.min.js"></script>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/vuedraggable/dist/vuedraggable.js"></script>
+
+
 <script src="js/getData.js"></script>

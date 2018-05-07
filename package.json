@@ -2,7 +2,8 @@
   "requires": true,
   "lockfileVersion": 1,
   "dependencies": {
-    "vue": "^2.5.16"
+    "vue": "^2.5.16",
+    "vuedraggable": "^2.16.0"
   },
   "devDependencies": {
     "echarts": "^4.0.4",
