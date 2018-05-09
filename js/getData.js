@@ -10,16 +10,16 @@ var vue = new Vue({
     memoryColors: ['#fa6e86', '#19d4ae'],
     tcp: [],
     tcpSetting: [],
-    tcpArr: [],
+    tcpArr: [0],
     tcpWidth: "98%",
     myArray: [
       {name:'1','id':'1'}
     ]
   },
   mounted: function () {
-    // this.getCPUData();
-    // this.getMemoryData();
-    // this.getTCPData();
+    this.getCPUData();
+    this.getMemoryData();
+    this.getTCPData();
     // :title="test"
     // :data-zoom="dataZoom"
   },
@@ -105,7 +105,7 @@ var vue = new Vue({
           }
         },
         failed: function () {
-          vue.tcp = {};
+          // vue.tcp = {};
         }
       })
     }

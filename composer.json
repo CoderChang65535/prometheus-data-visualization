@@ -1,6 +1,7 @@
 {
     "require": {
         "vlucas/phpdotenv": "^2.4",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "catfan/medoo": "^1.5"
     }
 }

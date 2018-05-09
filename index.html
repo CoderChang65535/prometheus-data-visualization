@@ -12,7 +12,7 @@
         <fieldset>
             <legend>各个节点CPU使用率(%)</legend>
             <ve-line :settings="cpuSettings" :data="cpu">
-                <div class="data-empty">没有数据</div>
+                <!--<div class="data-empty">没有数据</div>-->
             </ve-line>
         </fieldset>
     </div>
@@ -27,8 +27,8 @@
     <div id="tcp">
         <fieldset>
             <legend>各个worker的TCP链接异常情况</legend>
-            <ve-pie v-for="i in tcpArr" :data="tcp[i]" :settings="tcpSetting[i]" :width="tcpWidth" class="tcp">
-                <p class="title tcp-title">{{tcp[i]["columns"][1]}}</p>
+            <ve-pie v-for="i in tcpArr" :data="tcp[i]" :settings="tcpSetting[i]" :width="tcpWidth" class="tcp" :key="i">
+                <p class="title tcp-title">{{tcp[i].columns[1]}}</p>
             </ve-pie>
         </fieldset>
     </div>
@@ -40,7 +40,6 @@
 <script src="node_modules/echarts/dist/echarts.min.js"></script>
 <script src="node_modules/v-charts/lib/index.min.js"></script>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
-<script src="node_modules/vuedraggable/dist/vuedraggable.js"></script>
 
 
 <script src="js/getData.js"></script>

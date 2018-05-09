@@ -8,8 +8,12 @@
 
 namespace Coderzhang\DataGetter;
 require_once 'DataHelper.php';
+require_once 'DatabaseHelper.php';
+require_once 'commonTools.php';
+
 
 use \Coderzhang\DataHelper;
+use \Coderzhang\DatabaseHelper;
 
 class CPUDataGetter extends DataHelper
 {
@@ -18,10 +22,16 @@ class CPUDataGetter extends DataHelper
   }
 
   public function getResult($client) {
+    $cache = $this->getCache();
+    if (!empty($cache)) {
+      return json_encode($cache);
+    }
+    return;
     date_default_timezone_set('Asia/Shanghai');
     $key = ['column' => ['time']];
 
     $result = array();
+    $db = new DatabaseHelper();
     for ($i = $this->density - 1; $i >= 0; $i--) {
       $offset = $i * 5;
       $res = $this->createQuery($client, $offset);
@@ -35,6 +45,23 @@ class CPUDataGetter extends DataHelper
         $key['column'][] = $item->metric->instance;
         $line[$item->metric->instance] = round($item->value[1] * 100, 2);
         $line['time'] = date('H:i:s', $item->value[0] - 5 * 60 * $i);
+
+        // save cache to db
+        $queryResult = $db->dbClient()->select('CPU', ['value'],
+          [
+            'time' => date('Y-m-d H:i:s', $item->value[0] - 5 * 60 * $i),
+            'node' => $item->metric->instance
+          ]
+        );
+        if (empty($queryResult)) {
+          $db->dbClient()->insert('CPU',
+            [
+              'time'  => date('Y-m-d H:i:s', $item->value[0] - 5 * 60 * $i),
+              'value' => $line[$item->metric->instance],
+              'node'  => $item->metric->instance
+            ]
+          );
+        }
       }
       $result[] = $line;
     }
@@ -52,6 +79,53 @@ class CPUDataGetter extends DataHelper
   function __construct($density) {
     $this->query = 'query=rate(process_cpu_seconds_total{job="kubernetes-nodes"}[10m]';
     $this->density = $density;
+  }
+
+  protected function getCache() {
+    $db = new DatabaseHelper();
+
+    $timeResult = $db->dbClient()->select('CPU',
+      [
+        'time',
+      ],
+      [
+        'GROUP' => 'time',
+        'LIMIT' => 10,
+        'ORDER' => [
+          'time' => 'DESC'
+        ]
+      ]
+    );
+    $temp = [];
+    foreach ($timeResult as $item){
+      $temp[] = $item['time'];
+    }
+    $timeResult = array_unique($temp);
+    $result = [];
+    if (!empty($timeResult) && sizeof($timeResult) == 10) {
+      $result = ['column' => ['time'], 'result' => []];
+      $resultSet = [];
+      foreach ($timeResult as $item) {
+        $line['time'] = convertTimeToDay($item);
+        $queryResult = $db->dbClient()->select('CPU',
+          [
+            'node',
+            'value'
+          ],
+          [
+            'time' => $item
+          ]
+        );
+        foreach ($queryResult as $item2) {
+          $line[$item2['node']] = $item2['value'];
+          $result['column'][] = $item2['node'];
+        }
+        $resultSet[] = $line;
+      }
+      $result['result'] = $resultSet;
+      $result['column'] = array_unique($result['column']);
+    }
+    return $result;
   }
 
 }
