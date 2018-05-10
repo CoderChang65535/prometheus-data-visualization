@@ -2,6 +2,7 @@
   "requires": true,
   "lockfileVersion": 1,
   "dependencies": {
+    "jquery-ui-dist": "^1.12.1",
     "vue": "^2.5.16"
   },
   "devDependencies": {

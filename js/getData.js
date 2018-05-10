@@ -5,21 +5,23 @@ var vue = new Vue({
     cpuSettings: {
       scale: [true, true],
     },
+    cpuWidth: '98%',
     memory: [],
     memorySetting: {},
     memoryColors: ['#fa6e86', '#19d4ae'],
     tcp: [],
     tcpSetting: [],
-    tcpArr: [0],
+    tcpArr: [],
     tcpWidth: "98%",
     myArray: [
-      {name:'1','id':'1'}
+      {name: '1', 'id': '1'}
     ]
   },
   mounted: function () {
     this.getCPUData();
-    this.getMemoryData();
-    this.getTCPData();
+    this.createDialogs();
+    // this.getMemoryData();
+    // this.getTCPData();
     // :title="test"
     // :data-zoom="dataZoom"
   },
@@ -108,8 +110,41 @@ var vue = new Vue({
           // vue.tcp = {};
         }
       })
+    },
+    createDialogs: function () {
+      $("#cpu").dialog({
+        autoOpen: true,
+        show: {
+          effect: "blind",
+          duration: 1000
+        },
+        hide: {
+          effect: "explode",
+          duration: 1000
+        },
+        width: this.tcpWidth,
+        resizable: {
+          grid: 50,
+          handles: "all",
+          aspectRatio: true,
+        },
+        title: "CPU",
+        resizeStart: function () {
+
+        },
+        resizeStop: function () {
+
+        },
+        resize: function () {
+          vue.cpuWidth = $("div[aria-describedby='cpu']").width()+'';
+        }
+      });
+      $("div[aria-describedby='cpu']").resizable({
+        aspectRatio: true,
+        handles: "e"
+      });
     }
 
   }
-})
+});
 

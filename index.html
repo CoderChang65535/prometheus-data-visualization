@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>K8S Chart</title>
     <link rel="stylesheet" href="css/index.css" type="text/css">
+    <link rel="stylesheet" href="node_modules/jquery-ui-dist/jquery-ui.css" type="text/css">
 </head>
 
 <body>
@@ -11,7 +12,7 @@
     <div id="cpu">
         <fieldset>
             <legend>各个节点CPU使用率(%)</legend>
-            <ve-line :settings="cpuSettings" :data="cpu">
+            <ve-line :settings="cpuSettings" :data="cpu" :width="cpuWidth">
                 <!--<div class="data-empty">没有数据</div>-->
             </ve-line>
         </fieldset>
@@ -40,6 +41,7 @@
 <script src="node_modules/echarts/dist/echarts.min.js"></script>
 <script src="node_modules/v-charts/lib/index.min.js"></script>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
+<script src="node_modules/jquery-ui-dist/jquery-ui.js"></script>
 
 
 <script src="js/getData.js"></script>

@@ -101,6 +101,8 @@ class CPUDataGetter extends DataHelper
       $temp[] = $item['time'];
     }
     $timeResult = array_unique($temp);
+    $timeResult = array_reverse($timeResult);
+
     $result = [];
     if (!empty($timeResult) && sizeof($timeResult) == 10) {
       $result = ['column' => ['time'], 'result' => []];
