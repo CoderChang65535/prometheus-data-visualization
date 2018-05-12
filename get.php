@@ -24,8 +24,12 @@ if (isset($_GET['target'])) {
       print $memory->getResult($client);
       break;
     case 'tcp':
-      $memory = new \Coderzhang\DataGetter\TCPDataGetter();
-      print $memory->getResult($client);
+      $tcp = new \Coderzhang\DataGetter\TCPDataGetter();
+      print $tcp->getResult($client);
+      break;
+    case 'basic':
+      $basic = new \Coderzhang\DataGetter\BasicInfoDataGetter();
+      print $basic->getResult($client);
       break;
   }
 
