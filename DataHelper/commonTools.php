@@ -24,11 +24,23 @@ function convertTimeToTimestampWithoutSeconds($time) {
   return $timestamp;
 }
 
-function convertTimeToDay($time) {
+function convertTimeToHIS($time) {
+  date_default_timezone_set('Asia/Shanghai');
   $timestamp = strtotime($time);
   return date('H:i:s', $timestamp);;
 }
 
-function calculateIntervalSeconds($time1, $time2) {
+function calculateIntervalSecondsFromNow($time) {
+  date_default_timezone_set('Asia/Shanghai');
 
+  if (empty($time)) {
+    return true;
+  }
+  $timestamp = strtotime($time);
+  return abs(time() - $timestamp);
+
+}
+
+function farAwayOverOneMinute($time) {
+  return calculateIntervalSecondsFromNow($time) > 60;
 }

@@ -9,48 +9,21 @@ var vue = new Vue({
     memory: [],
     memorySetting: {},
     memoryColors: ['#fa6e86', '#19d4ae'],
-    tcp: [],
+    tcp: [{"columns":["type","192.168.171.140:9100"],"rows":[{"type":"链接信息错误","192.168.171.140:9100":"0"},{"type":"监听断开","192.168.171.140:9100":"0"},{"type":"连接超时","192.168.171.140:9100":"10"},{"type":"重连丢失","192.168.171.140:9100":"0"},{"type":"异常关闭","192.168.171.140:9100":"2"}]}],
     tcpSetting: [],
-    tcpArr: [],
+    tcpArr: [0],
     tcpWidth: "98%",
     myArray: [
       {name: '1', 'id': '1'}
     ]
   },
   mounted: function () {
-    this.getCPUData();
     this.createDialogs();
-    // this.getMemoryData();
-    // this.getTCPData();
-    // :title="test"
-    // :data-zoom="dataZoom"
   },
   created: function () {
-    this.ctitle = "title";
-    this.chartData = {
-      columns: ['日期', '成本', '利润'],
-      rows: [
-        {'日期': '1月1日', '成本': 15, '利润': 12},
-        {'日期': '1月2日', '成本': 12, '利润': 25},
-        {'日期': '1月3日', '成本': 21, '利润': 10},
-        {'日期': '1月4日', '成本': 41, '利润': 32},
-        {'日期': '1月5日', '成本': 31, '利润': 30},
-        {'日期': '1月6日', '成本': 71, '利润': 55}
-      ]
-    };
-    this.dataZoom = [
-      {
-        type: 'slider',
-        start: 0,
-        end: 20
-      }
-    ];
-    this.toolbox = {
-      feature: {
-        magicType: {type: ['line', 'bar']},
-        saveAsImage: {}
-      }
-    };
+    this.getTCPData();
+    this.getCPUData();
+    this.getMemoryData();
   },
   methods: {
     getCPUData: function () {
@@ -122,7 +95,7 @@ var vue = new Vue({
           effect: "explode",
           duration: 1000
         },
-        width: this.tcpWidth,
+        width: this.cpuWidth,
         resizable: {
           grid: 50,
           handles: "all",
@@ -140,6 +113,68 @@ var vue = new Vue({
         }
       });
       $("div[aria-describedby='cpu']").resizable({
+        aspectRatio: true,
+        handles: "e"
+      });
+      $("#tcp").dialog({
+        autoOpen: true,
+        show: {
+          effect: "blind",
+          duration: 1000
+        },
+        hide: {
+          effect: "explode",
+          duration: 1000
+        },
+        width: this.tcpWidth,
+        resizable: {
+          grid: 50,
+          handles: "all",
+          aspectRatio: true,
+        },
+        title: "TCP",
+        resizeStart: function () {
+
+        },
+        resizeStop: function () {
+
+        },
+        resize: function () {
+          vue.tcpWidth = $("div[aria-describedby='tcp']").width()+'';
+        }
+      });
+      $("div[aria-describedby='tcp']").resizable({
+        aspectRatio: true,
+        handles: "e"
+      });
+      $("#memory").dialog({
+        autoOpen: true,
+        show: {
+          effect: "blind",
+          duration: 1000
+        },
+        hide: {
+          effect: "explode",
+          duration: 1000
+        },
+        width: this.tcpWidth,
+        resizable: {
+          grid: 50,
+          handles: "all",
+          aspectRatio: true,
+        },
+        title: "内存",
+        resizeStart: function () {
+
+        },
+        resizeStop: function () {
+
+        },
+        resize: function () {
+          vue.cpuWidth = $("div[aria-describedby='cpu']").width()+'';
+        }
+      });
+      $("div[aria-describedby='memory']").resizable({
         aspectRatio: true,
         handles: "e"
       });

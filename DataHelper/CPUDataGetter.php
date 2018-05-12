@@ -26,12 +26,12 @@ class CPUDataGetter extends DataHelper
     if (!empty($cache)) {
       return json_encode($cache);
     }
-    return;
     date_default_timezone_set('Asia/Shanghai');
     $key = ['column' => ['time']];
 
     $result = array();
     $db = new DatabaseHelper();
+    $queryID = md5(time() + rand() + time() + json_encode($this->query));
     for ($i = $this->density - 1; $i >= 0; $i--) {
       $offset = $i * 5;
       $res = $this->createQuery($client, $offset);
@@ -56,12 +56,16 @@ class CPUDataGetter extends DataHelper
         if (empty($queryResult)) {
           $db->dbClient()->insert('CPU',
             [
-              'time'  => date('Y-m-d H:i:s', $item->value[0] - 5 * 60 * $i),
-              'value' => $line[$item->metric->instance],
-              'node'  => $item->metric->instance
+              'queryId' => $queryID,
+              'time'    => date('Y-m-d H:i:s', $item->value[0] - 5 * 60 * $i),
+              'value'   => $line[$item->metric->instance],
+              'node'    => $item->metric->instance
             ]
           );
         }
+      }
+      if (empty($line)) {
+        continue;
       }
       $result[] = $line;
     }
@@ -87,46 +91,62 @@ class CPUDataGetter extends DataHelper
     $timeResult = $db->dbClient()->select('CPU',
       [
         'time',
+        'queryID'
       ],
       [
-        'GROUP' => 'time',
-        'LIMIT' => 10,
+        'LIMIT' => 1,
         'ORDER' => [
           'time' => 'DESC'
         ]
       ]
     );
-    $temp = [];
-    foreach ($timeResult as $item){
-      $temp[] = $item['time'];
+    foreach ($timeResult as $item) {
+      $time = $item['time'];
+      $queryID = $item['queryID'];
     }
-    $timeResult = array_unique($temp);
-    $timeResult = array_reverse($timeResult);
+    if (farAwayOverOneMinute($time)) {
+      return null;
+    }
 
-    $result = [];
-    if (!empty($timeResult) && sizeof($timeResult) == 10) {
-      $result = ['column' => ['time'], 'result' => []];
-      $resultSet = [];
-      foreach ($timeResult as $item) {
-        $line['time'] = convertTimeToDay($item);
-        $queryResult = $db->dbClient()->select('CPU',
-          [
-            'node',
-            'value'
-          ],
-          [
-            'time' => $item
-          ]
-        );
-        foreach ($queryResult as $item2) {
-          $line[$item2['node']] = $item2['value'];
-          $result['column'][] = $item2['node'];
-        }
-        $resultSet[] = $line;
-      }
-      $result['result'] = $resultSet;
-      $result['column'] = array_unique($result['column']);
+    $queryResult = $db->dbClient()->select('CPU',
+      [
+        'node',
+        'value',
+        'time'
+      ],
+      [
+        'queryID' => $queryID
+      ]
+    );
+    $resultSet = [];
+    $result = ['column' => ['time'], 'result' => []];
+    foreach ($queryResult as $item) {
+      $resultSet[$item['time']][] = [$item['node'] => $item['value']];
+      $result['column'][] = $item['node'];
     }
+    if (!empty($resultSet)) {
+      foreach ($resultSet as $item_time => $item) {
+        $line = ['time' => convertTimeToHIS($item_time)];
+        foreach ($item as $key => $iitem) {
+          foreach ($iitem as $kkey => $iiitem) {
+            $line[$kkey] = $iiitem;
+          }
+        }
+        $result['result'][] = $line;
+      }
+    }
+//    if (!empty($timeResult) && sizeof($timeResult) == 10) {
+//      $resultSet = [];
+//      foreach ($timeResult as $item) {
+//        $line['time'] = convertTimeToDay($item);
+//
+//        foreach ($queryResult as $item2) {
+//          $line[$item2['node']] = $item2['value'];
+//        }
+//        $resultSet[] = $line;
+//      }
+//    }
+    $result['column'] = array_unique($result['column']);
     return $result;
   }
 
