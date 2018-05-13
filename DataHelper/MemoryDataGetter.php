@@ -10,6 +10,8 @@ namespace Coderzhang\DataGetter;
 require_once 'DataHelper.php';
 
 use \Coderzhang\DataHelper;
+use \Coderzhang\DatabaseHelper;
+
 
 class MemoryDataGetter extends DataHelper
 {
@@ -18,6 +20,10 @@ class MemoryDataGetter extends DataHelper
   }
 
   public function getResult($client) {
+    $cache = $this->getCache();
+    if (!empty($cache)) {
+      return json_encode($cache);
+    }
     date_default_timezone_set('Asia/Shanghai');
     $result = ['column' => ['node', '内存使用量', '内存可用量']];
 
@@ -42,16 +48,28 @@ class MemoryDataGetter extends DataHelper
     foreach ($node_list as $node) {
       $result['rows'][] = [
         'node'  => $node,
-        '内存使用量' => floor(($temp['node_memory_MemTotal'][$node] - $temp['node_memory_MemAvailable'][$node])/1000000),
-        '内存可用量' => floor($temp['node_memory_MemAvailable'][$node]/1000000)
+        '内存使用量' => floor(($temp['node_memory_MemTotal'][$node] - $temp['node_memory_MemAvailable'][$node]) / 1000000),
+        '内存可用量' => floor($temp['node_memory_MemAvailable'][$node] / 1000000)
       ];
     }
     $result['memorySetting'] = new \stdClass();
     $result['memorySetting']->dimension = ['node'];
-    $result['memorySetting']->metrics = ['内存使用量','内存可用量'];
+    $result['memorySetting']->metrics = ['内存使用量', '内存可用量'];
     $result['memorySetting']->xAxisType = ['normal'];
     $result['memorySetting']->xAxisName = ['内存'];
-    $result['memorySetting']->stack = ['内存'=>['内存使用量','内存可用量']];
+    $result['memorySetting']->stack = ['内存' => ['内存使用量', '内存可用量']];
+
+    // save to db
+    $db = new DatabaseHelper();
+    $queryID = md5(time() + rand() + time() + json_encode($this->query));
+    $db->dbClient()->insert('Memory',
+      [
+        'queryId' => $queryID,
+        'time'    => date('Y-m-d H:i:s', time()),
+        'value'   => json_encode($result),
+        'node'    => ''
+      ]
+    );
 
     return json_encode($result);
   }
@@ -64,6 +82,46 @@ class MemoryDataGetter extends DataHelper
 
   function __construct() {
     $this->query = array('node_memory_MemAvailable', 'node_memory_MemTotal');
+  }
+
+  protected function getCache() {
+    // TODO: Implement getCache() method.
+    $db = new DatabaseHelper();
+
+    $timeResult = $db->dbClient()->select('Memory',
+      [
+        'time',
+        'queryID'
+      ],
+      [
+        'LIMIT' => 1,
+        'ORDER' => [
+          'time' => 'DESC'
+        ]
+      ]
+    );
+    foreach ($timeResult as $item) {
+      $time = $item['time'];
+      $queryID = $item['queryID'];
+    }
+    if (farAwayOverOneMinute($time)) {
+      return null;
+    }
+
+    $queryResult = $db->dbClient()->select('Memory',
+      [
+        'node',
+        'value',
+        'time'
+      ],
+      [
+        'queryID' => $queryID
+      ]
+    );
+
+    foreach ($queryResult as $item) {
+      return $item['value'];
+    }
   }
 
 }

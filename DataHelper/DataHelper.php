@@ -46,5 +46,10 @@ namespace Coderzhang {
      * @return mixed result
      */
     abstract public function getResult($client);
+
+    /**
+     * @return mixed
+     */
+    abstract protected function getCache();
   }
 }

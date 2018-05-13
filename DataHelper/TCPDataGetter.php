@@ -10,6 +10,8 @@ namespace Coderzhang\DataGetter;
 require_once 'DataHelper.php';
 
 use \Coderzhang\DataHelper;
+use \Coderzhang\DatabaseHelper;
+
 
 class TCPDataGetter extends DataHelper
 {
@@ -56,6 +58,19 @@ class TCPDataGetter extends DataHelper
       $result[] = $var;
     }
 
+    // save to db
+    $db = new DatabaseHelper();
+    $queryID = md5(time() + rand() + time() + json_encode($this->query));
+    $db->dbClient()->insert('TCP',
+      [
+        'queryId' => $queryID,
+        'time'    => date('Y-m-d H:i:s', time()),
+        'value'   => json_encode($result),
+        'node'    => ''
+      ]
+    );
+
+
     return json_encode($result);
   }
 
@@ -74,6 +89,45 @@ class TCPDataGetter extends DataHelper
       '异常关闭'   => 'node_netstat_Tcp_EstabResets'
     );
   }
+
+  protected function getCache() {
+    // TODO: Implement getCache() method.
+    $db = new DatabaseHelper();
+
+    $timeResult = $db->dbClient()->select('TCP',
+      [
+        'time',
+        'queryID'
+      ],
+      [
+        'LIMIT' => 1,
+        'ORDER' => [
+          'time' => 'DESC'
+        ]
+      ]
+    );
+    foreach ($timeResult as $item) {
+      $time = $item['time'];
+      $queryID = $item['queryID'];
+    }
+    if (farAwayOverOneMinute($time)) {
+      return null;
+    }
+
+    $queryResult = $db->dbClient()->select('TCP',
+      [
+        'node',
+        'value',
+        'time'
+      ],
+      [
+        'queryID' => $queryID
+      ]
+    );
+
+    foreach ($queryResult as $item) {
+      return $item['value'];
+    }  }
 
 }
 
