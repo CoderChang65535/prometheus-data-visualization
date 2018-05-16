@@ -92,7 +92,7 @@ var vue = new Vue({
           duration: 1000
         },
         hide: {
-          effect: "explode",
+          // effect: "explode",
           duration: 1000
         },
         width: this.cpuWidth,
@@ -123,7 +123,7 @@ var vue = new Vue({
           duration: 1000
         },
         hide: {
-          effect: "explode",
+          // effect: "explode",
           duration: 1000
         },
         width: this.tcpWidth,
@@ -154,7 +154,7 @@ var vue = new Vue({
           duration: 1000
         },
         hide: {
-          effect: "explode",
+          // effect: "explode",
           duration: 1000
         },
         width: this.tcpWidth,
