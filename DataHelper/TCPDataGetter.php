@@ -34,6 +34,9 @@ class TCPDataGetter extends DataHelper
 
     foreach ($resource as $r_name => $item) {
       foreach ($item as $line) {
+        if($line->value[1] == 0){
+          continue;
+        }
         $temp[$r_name][$line->metric->instance] = $line->value[1];
         $node_list[] = $line->metric->instance;
       }

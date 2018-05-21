@@ -10,12 +10,13 @@
 <body>
 <div id="bar">
     <ul class="nav black">
-        <li><a href=""></a></li>
-        <li><a href=""></a></li>
-        <li><a href=""></a></li>
-        <li><a href=""></a></li>
-        <li><a href=""></a></li>
-        <li class="li-right"><a href=""></a></li>
+        <a href=""><li>基于K8S集群的Web端可视化监测</li></a>
+        <a href="#"><li>添加</li></a>
+        <a href="#"><li>1</li></a>
+        <a href="#"><li>1</li></a>
+        <a href="#"><li>1</li></a>
+        <a href="#"><li>1</li></a>
+        <a href="#"><li class="li-right">保存配置</li></a>
     </ul>
 </div>
 <div id="app">
@@ -31,7 +32,7 @@
     <div id="memory">
         <fieldset>
             <legend>各个worker的内存使用情况(MB)</legend>
-            <ve-bar :data="memory" :settings="memorySetting" :colors="memoryColors"></ve-bar>
+            <ve-bar :data="memory" :settings="memorySetting" :colors="memoryColors" :width="memoryWidth"></ve-bar>
         </fieldset>
     </div>
     <br/>

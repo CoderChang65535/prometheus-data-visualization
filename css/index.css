@@ -17,6 +17,7 @@ fieldset > legend {
 
 body {
     margin: 0.5%;
+    height: 20000px;
 }
 
 fieldset {
@@ -37,14 +38,13 @@ fieldset {
     font-size: 14px;
 }
 
-#bar{
+#bar {
     margin: -0.5% -0.5% 0 -0.5%;
 }
 
 .nav li.li-right {
     float: right;
-    padding: 0;
-    margin-right: 32px;
+    padding: 0 16px;
 }
 
 .nav {
@@ -52,6 +52,10 @@ fieldset {
     height: 50px;
     font: bold 0/50px Arial;
     text-align: center;
+    position: fixed;
+    padding: 0 40px;
+    left: 0;
+    right: 0;
     /*margin:40px auto 0;*/
     /*border-radius: 8px;*/
 }
