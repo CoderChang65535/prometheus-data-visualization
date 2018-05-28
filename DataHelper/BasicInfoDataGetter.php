@@ -38,7 +38,7 @@ class BasicInfoDataGetter extends DataHelper
     $result = array();
     $result['pod'] = [];
     $db = new DatabaseHelper();
-    $queryID = md5(time() + rand() + time() + json_encode($this->query));
+    $queryID = md5(json_encode($this->query).time().rand().time());
 
     foreach ($resource['kubelet_running_pod_count'] as $item) {
       if ($item->metric->instance == $_ENV['MASTER_ALIAS']) {

@@ -31,7 +31,7 @@ class CPUDataGetter extends DataHelper
 
     $result = array();
     $db = new DatabaseHelper();
-    $queryID = md5(time() + rand() + time() + json_encode($this->query));
+    $queryID = md5(json_encode($this->query).time().rand().time());
     for ($i = $this->density - 1; $i >= 0; $i--) {
       $offset = $i * 5;
       $res = $this->createQuery($client, $offset);

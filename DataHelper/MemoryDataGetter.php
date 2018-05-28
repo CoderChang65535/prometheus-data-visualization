@@ -61,7 +61,7 @@ class MemoryDataGetter extends DataHelper
 
     // save to db
     $db = new DatabaseHelper();
-    $queryID = md5(time() + rand() + time() + json_encode($this->query));
+      $queryID = md5(json_encode($this->query).time().rand().time());
     $db->dbClient()->insert('Memory',
       [
         'queryId' => $queryID,
@@ -85,7 +85,6 @@ class MemoryDataGetter extends DataHelper
   }
 
   protected function getCache() {
-    // TODO: Implement getCache() method.
     $db = new DatabaseHelper();
 
     $timeResult = $db->dbClient()->select('Memory',

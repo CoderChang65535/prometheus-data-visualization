@@ -12,6 +12,10 @@ require_once __DIR__ . "/../vendor/autoload.php";
 
 use Medoo\Medoo;
 
+/**
+ * Class DatabaseHelper
+ * @package Coderzhang
+ */
 class DatabaseHelper
 {
   private $database;

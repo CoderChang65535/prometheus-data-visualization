@@ -60,7 +60,7 @@ class TCPDataGetter extends DataHelper
 
     // save to db
     $db = new DatabaseHelper();
-    $queryID = md5(time() + rand() + time() + json_encode($this->query));
+    $queryID = md5(json_encode($this->query).time().rand().time());
     $db->dbClient()->insert('TCP',
       [
         'queryId' => $queryID,
