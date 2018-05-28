@@ -9,6 +9,7 @@ var vue = new Vue({
     memory: [],
     memorySetting: {},
     memoryColors: ['#fa6e86', '#19d4ae'],
+    memoryWidth: "98%",
     tcp: [{"columns":["type","192.168.171.140:9100"],"rows":[{"type":"链接信息错误","192.168.171.140:9100":"0"},{"type":"监听断开","192.168.171.140:9100":"0"},{"type":"连接超时","192.168.171.140:9100":"10"},{"type":"重连丢失","192.168.171.140:9100":"0"},{"type":"异常关闭","192.168.171.140:9100":"2"}]}],
     tcpSetting: [],
     tcpArr: [0],
@@ -157,7 +158,7 @@ var vue = new Vue({
           // effect: "explode",
           duration: 1000
         },
-        width: this.tcpWidth,
+        width: this.memoryWidth,
         resizable: {
           grid: 50,
           handles: "all",
@@ -171,7 +172,7 @@ var vue = new Vue({
 
         },
         resize: function () {
-          vue.cpuWidth = $("div[aria-describedby='cpu']").width()+'';
+          vue.memoryWidth = $("div[aria-describedby='memory']").width()+'';
         }
       });
       $("div[aria-describedby='memory']").resizable({
