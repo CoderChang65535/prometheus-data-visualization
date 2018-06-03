@@ -24,7 +24,7 @@ class BasicInfoDataGetter extends DataHelper
   public function getResult($client) {
     $cache = $this->getCache();
     if (!empty($cache)) {
-      return json_encode($cache);
+      return $cache;
     }
     date_default_timezone_set('Asia/Shanghai');
 
@@ -37,57 +37,52 @@ class BasicInfoDataGetter extends DataHelper
 
     $result = array();
     $result['pod'] = [];
-    $db = new DatabaseHelper();
-    $queryID = md5(json_encode($this->query).time().rand().time());
+
+    foreach ($resource['node_filesystem_size_bytes{device="rootfs"}'] as $item) {
+      if ($item->metric->instance == $_ENV['MASTER_ALIAS']) {
+        $item->metric->instance = $_ENV['MASTER'];
+      }
+      $result['disk'][$item->metric->instance][] = $item->value[1];
+    }
+
+    foreach ($resource['node_filesystem_free_bytes{device="rootfs"}'] as $item) {
+      if ($item->metric->instance == $_ENV['MASTER_ALIAS']) {
+        $item->metric->instance = $_ENV['MASTER'];
+      }
+      $result['disk'][$item->metric->instance][] = $item->value[1];
+    }
+
+    foreach ($resource['kube_pod_info'] as $item) {
+      if ($item->metric->node == $_ENV['MASTER_ALIAS']) {
+        $item->metric->node = $_ENV['MASTER'];
+      }
+      $result['pod_info'][$item->metric->node][] =
+        str_replace($_ENV['MASTER_ALIAS'], $_ENV['MASTER'], $item->metric->pod);
+    }
+
+    $temp = [];
+    foreach ($result['pod_info'] as $key => $item) {
+      $temp[$key] = array_unique($item);
+    }
+    $result['pod_info'] = $temp;
 
     foreach ($resource['kubelet_running_pod_count'] as $item) {
       if ($item->metric->instance == $_ENV['MASTER_ALIAS']) {
         $item->metric->instance = $_ENV['MASTER'];
       }
-      $db->dbClient()->insert('BasicInfo',
-        [
-          'queryID' => $queryID,
-          'node'    => $item->metric->instance,
-          'value'   => $item->value[1],
-          'time'    => date('Y-m-d H:i:s', time()),
-          'type'    => 'kubelet_running_pod_count'
-        ]
-      );
-      $result['pod'][] = [$item->metric->instance, $item->value[1]];
+      $result['pod'][] = [$item->metric->instance, count($result['pod_info'][$item->metric->instance])];
     }
 
-    foreach ($resource['node_filesystem_size{device="rootfs"}'] as $item) {
-      if ($item->metric->instance == $_ENV['MASTER_ALIAS']) {
-        $item->metric->instance = $_ENV['MASTER'];
-      }
-      $db->dbClient()->insert('BasicInfo',
-        [
-          'queryID' => $queryID,
-          'node'    => $item->metric->instance,
-          'value'   => $item->value[1],
-          'time'    => date('Y-m-d H:i:s', time()),
-          'type'    => 'node_filesystem_size'
-        ]
-      );
-      $result['disk'][$item->metric->instance][] = $item->value[1];
-    }
-
-    foreach ($resource['node_filesystem_free{device="rootfs"}'] as $item) {
-      if ($item->metric->instance == $_ENV['MASTER_ALIAS']) {
-        $item->metric->instance = $_ENV['MASTER'];
-      }
-      $db->dbClient()->insert('BasicInfo',
-        [
-          'queryID' => $queryID,
-          'node'    => $item->metric->instance,
-          'value'   => $item->value[1],
-          'time'    => date('Y-m-d H:i:s', time()),
-          'type'    => 'node_filesystem_free'
-        ]
-      );
-      $result['disk'][$item->metric->instance][] = $item->value[1];
-    }
-
+    $db = new DatabaseHelper();
+    $queryID = md5(json_encode($this->query) . time() . rand() . time());
+    $db->dbClient()->insert('BasicInfo',
+      [
+        'queryId' => $queryID,
+        'time'    => date('Y-m-d H:i:s', time()),
+        'value'   => json_encode($result),
+        'node'    => ''
+      ]
+    );
 
     return json_encode($result);
   }
@@ -100,9 +95,10 @@ class BasicInfoDataGetter extends DataHelper
 
   function __construct($density) {
     $this->query = array(
-      '磁盘容量'   => 'node_filesystem_size{device="rootfs"}',
-      '磁盘剩余容量' => 'node_filesystem_free{device="rootfs"}',
-      'POD信息'  => 'kubelet_running_pod_count',
+      '磁盘容量'   => 'node_filesystem_size_bytes{device="rootfs"}',
+      '磁盘剩余容量' => 'node_filesystem_free_bytes{device="rootfs"}',
+      'POD数量'  => 'kubelet_running_pod_count',
+      'POD信息'  => 'kube_pod_info',
     );
   }
 
@@ -121,71 +117,28 @@ class BasicInfoDataGetter extends DataHelper
         ]
       ]
     );
-
     foreach ($timeResult as $item) {
       $time = $item['time'];
       $queryID = $item['queryID'];
     }
-
-    if (calculateIntervalSecondsFromNow($time) > 10) {
+    if (farAwayOverOneMinute($time)) {
       return null;
     }
-    $result = [];
 
     $queryResult = $db->dbClient()->select('BasicInfo',
       [
         'node',
         'value',
-        'time',
-        'type'
+        'time'
       ],
       [
-        'queryID' => $queryID,
-        'type'    => 'kubelet_running_pod_count'
+        'queryID' => $queryID
       ]
     );
-    foreach ($queryResult as $item) {
-      if ($item['type'] == 'kubelet_running_pod_count') {
-        $result['pod'][] = [$item['node'], $item['value']];
-      }
-    }
 
-    $queryResult = $db->dbClient()->select('BasicInfo',
-      [
-        'node',
-        'value',
-        'time',
-        'type'
-      ],
-      [
-        'queryID' => $queryID,
-        'type'    => 'node_filesystem_size'
-      ]
-    );
     foreach ($queryResult as $item) {
-      if ($item['type'] == 'node_filesystem_size') {
-        $result['disk'][$item['node']][] = $item['value'];
-      }
+      return $item['value'];
     }
-    $queryResult = $db->dbClient()->select('BasicInfo',
-      [
-        'node',
-        'value',
-        'time',
-        'type'
-      ],
-      [
-        'queryID' => $queryID,
-        'type'    => 'node_filesystem_free'
-      ]
-    );
-    foreach ($queryResult as $item) {
-      if ($item['type'] == 'node_filesystem_free') {
-        $result['disk'][$item['node']][] = $item['value'];
-      }
-    }
-
-    return $result;
   }
 
 }

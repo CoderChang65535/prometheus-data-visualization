@@ -34,15 +34,29 @@ class TCPDataGetter extends DataHelper
 
     foreach ($resource as $r_name => $item) {
       foreach ($item as $line) {
-        if($line->value[1] == 0){
-          continue;
-        }
+//        if ($line->value[1] == 0) {
+//          continue;
+//        }
         $temp[$r_name][$line->metric->instance] = $line->value[1];
         $node_list[] = $line->metric->instance;
       }
     }
 
     $node_list = array_unique($node_list);
+
+    if(empty($node_list)){
+      $var = array();
+      $body = array();
+      $var['rows'] = $body;
+      $var['columns'] = ['type',null];
+      $obj = new \stdClass();
+      $obj->dimension = 'type';
+      $obj->metrics = null;
+      $obj->selectedMode = 'single';
+      $obj->hoverAnimation = 'false';
+      $var['tcpSettings'] = $obj;
+      $result[] = $var;
+    }
 
     foreach ($node_list as $node) {
       $var = array();
@@ -63,7 +77,7 @@ class TCPDataGetter extends DataHelper
 
     // save to db
     $db = new DatabaseHelper();
-    $queryID = md5(json_encode($this->query).time().rand().time());
+    $queryID = md5(json_encode($this->query) . time() . rand() . time());
     $db->dbClient()->insert('TCP',
       [
         'queryId' => $queryID,
@@ -130,7 +144,8 @@ class TCPDataGetter extends DataHelper
 
     foreach ($queryResult as $item) {
       return $item['value'];
-    }  }
+    }
+  }
 
 }
 

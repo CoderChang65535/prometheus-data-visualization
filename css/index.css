@@ -40,6 +40,7 @@ fieldset {
 
 #bar {
     margin: -0.5% -0.5% 0 -0.5%;
+    height: 50px;
 }
 
 .nav li.li-right {
@@ -56,6 +57,8 @@ fieldset {
     padding: 0 40px;
     left: 0;
     right: 0;
+    /*z-index: 99999;*/
+
     /*margin:40px auto 0;*/
     /*border-radius: 8px;*/
 }
@@ -75,6 +78,10 @@ fieldset {
 .black {
     background: #2c2c2c;
     box-shadow: 0 7px 0 #0b0b0b;
+}
+
+.light-black {
+    background: #404040;
 }
 
 .nav li {
@@ -125,4 +132,30 @@ fieldset {
 .nav a:hover {
     color: #fff;
     text-decoration: none;
+}
+
+#basicInfo > table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    font-family: Futura, Arial, sans-serif;
+}
+
+#basicInfo caption {
+    font-size: larger;
+    margin: 1em auto;
+}
+
+#basicInfo th, #basicInfo td {
+    padding: .65em;
+    border-bottom: 1px solid #ddd;
+    border-top: 1px solid #ddd;
+    text-align: center;
+}
+
+#basicInfo tbody tr:hover {
+    background: linear-gradient(#9a9a9a, #9a9a9a);
+}
+
+#bar, #func-list {
+    z-index: 99999;
 }

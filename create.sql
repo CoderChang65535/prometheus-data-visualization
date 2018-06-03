@@ -20,12 +20,12 @@ CREATE TABLE `prom-vs`.`Memory` (
   `queryID` VARCHAR(45) NOT NULL,
   `time` VARCHAR(45) NOT NULL,
   `node` VARCHAR(45) NOT NULL,
-  `value` VARCHAR(45) NULL,
+  `value` VARCHAR(1023) NULL,
   PRIMARY KEY (`queryID`, `time`, `node`));
 
 CREATE TABLE `prom-vs`.`TCP` (
   `queryID` VARCHAR(45) NOT NULL,
   `time` VARCHAR(45) NOT NULL,
   `node` VARCHAR(45) NOT NULL,
-  `value` VARCHAR(45) NULL,
+  `value` VARCHAR(1023) NULL,
   PRIMARY KEY (`queryID`, `time`, `node`));

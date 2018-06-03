@@ -5,54 +5,79 @@
     <title>K8S Chart</title>
     <link rel="stylesheet" href="css/index.css" type="text/css">
     <link rel="stylesheet" href="node_modules/jquery-ui-dist/jquery-ui.css" type="text/css">
+    <script src="node_modules/vue/dist/vue.js"></script>
+    <script src="node_modules/echarts/dist/echarts.min.js"></script>
+    <script src="node_modules/v-charts/lib/index.min.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/jquery-ui-dist/jquery-ui.js"></script>
 </head>
 
 <body>
-<div id="bar">
-    <ul class="nav black">
-        <a href=""><li>基于K8S集群的Web端可视化监测</li></a>
-        <a href="#"><li>添加</li></a>
-        <a href="#"><li>1</li></a>
-        <a href="#"><li>1</li></a>
-        <a href="#"><li>1</li></a>
-        <a href="#"><li>1</li></a>
-        <a href="#"><li class="li-right">保存配置</li></a>
-    </ul>
-</div>
+
+
 <div id="app">
-    <div id="cpu">
-        <fieldset>
-            <legend>各个节点CPU使用率(%)</legend>
-            <ve-line :settings="cpuSettings" :data="cpu" :width="cpuWidth">
-                <!--<div class="data-empty">没有数据</div>-->
-            </ve-line>
-        </fieldset>
+    <div id="bar">
+        <ul class="nav black">
+            <a href=""><li>基于K8S集群的Web端可视化监测</li></a>
+            <a href="#" v-on:click="openBasicInfo"><li>集群基本情况</li></a>
+            <a href="#" v-on:click="showList"><li>添加图表</li></a>
+            <a href="#"><li class="li-right">保存配置</li></a>
+        </ul>
     </div>
-    <br/>
-    <div id="memory">
-        <fieldset>
-            <legend>各个worker的内存使用情况(MB)</legend>
-            <ve-bar :data="memory" :settings="memorySetting" :colors="memoryColors" :width="memoryWidth"></ve-bar>
-        </fieldset>
+    <div id="func-list" style="display: none">
+        <ul class="nav light-black">
+            <a href="#" v-on:click="openCPU"><li>CPU使用率</li></a>
+            <a href="#" v-on:click="openTCP"><li>TCP错误</li></a>
+            <a href="#" v-on:click="openMemory"><li>内存情况</li></a>
+        </ul>
     </div>
-    <br/>
-    <div id="tcp">
-        <fieldset>
-            <legend>各个worker的TCP链接异常情况</legend>
-            <ve-pie v-for="i in tcpArr" :data="tcp[i]" :settings="tcpSetting[i]" :width="tcpWidth" class="tcp" :key="i">
-                <p class="title tcp-title">{{tcp[i].columns[1]}}</p>
-            </ve-pie>
-        </fieldset>
+    <div id="basicInfo">
+        <table>
+            <thead><tr><th>节点</th><th>Pod数量</th></tr></thead>
+            <tbody>
+                <tr v-for="i in basicInfo.pod" v-bind:title="i[2]">
+                    <td>
+                        {{i[0]}}
+                    </td>
+                    <td>
+                        {{i[1]}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+    <div id="page">
+        <div id="cpu">
+            <fieldset>
+                <legend>各个节点CPU使用率(%)</legend>
+                <ve-line :settings="cpuSettings" :data="cpu" :width="cpuWidth">
+                    <!--<div class="data-empty">没有数据</div>-->
+                </ve-line>
+            </fieldset>
+        </div>
+        <br/>
+        <div id="memory">
+            <fieldset>
+                <legend>各个worker的内存使用情况(MB)</legend>
+                <ve-bar :data="memory" :settings="memorySetting" :colors="memoryColors" :width="memoryWidth"></ve-bar>
+            </fieldset>
+        </div>
+        <br/>
+        <div id="tcp">
+            <fieldset>
+                <legend>各个worker的TCP链接异常情况</legend>
+                <ve-pie v-for="i in tcpArr" :data="tcp[i]" :settings="tcpSetting[i]" :width="tcpWidth" class="tcp" :key="i">
+                    <p class="title tcp-title">{{tcp[i].columns[1]}}</p>
+                </ve-pie>
+            </fieldset>
+        </div>
+    </div>
+
 </div>
 </body>
 </html>
 
-<script src="node_modules/vue/dist/vue.js"></script>
-<script src="node_modules/echarts/dist/echarts.min.js"></script>
-<script src="node_modules/v-charts/lib/index.min.js"></script>
-<script src="node_modules/jquery/dist/jquery.min.js"></script>
-<script src="node_modules/jquery-ui-dist/jquery-ui.js"></script>
+
 
 
 <script src="js/getData.js"></script>

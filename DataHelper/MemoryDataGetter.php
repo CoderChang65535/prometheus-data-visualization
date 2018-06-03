@@ -20,10 +20,10 @@ class MemoryDataGetter extends DataHelper
   }
 
   public function getResult($client) {
-    $cache = $this->getCache();
-    if (!empty($cache)) {
-      return json_encode($cache);
-    }
+//    $cache = $this->getCache();
+//    if (!empty($cache)) {
+//      return $cache;
+//    }
     date_default_timezone_set('Asia/Shanghai');
     $result = ['column' => ['node', '内存使用量', '内存可用量']];
 
@@ -48,8 +48,8 @@ class MemoryDataGetter extends DataHelper
     foreach ($node_list as $node) {
       $result['rows'][] = [
         'node'  => $node,
-        '内存使用量' => floor(($temp['node_memory_MemTotal'][$node] - $temp['node_memory_MemAvailable'][$node]) / 1000000),
-        '内存可用量' => floor($temp['node_memory_MemAvailable'][$node] / 1000000)
+        '内存使用量' => floor(($temp['node_memory_MemTotal_bytes'][$node] - $temp['node_memory_MemAvailable_bytes'][$node]) / 1000000),
+        '内存可用量' => floor($temp['node_memory_MemAvailable_bytes'][$node] / 1000000)
       ];
     }
     $result['memorySetting'] = new \stdClass();
@@ -61,7 +61,7 @@ class MemoryDataGetter extends DataHelper
 
     // save to db
     $db = new DatabaseHelper();
-      $queryID = md5(json_encode($this->query).time().rand().time());
+    $queryID = md5(json_encode($this->query) . time() . rand() . time());
     $db->dbClient()->insert('Memory',
       [
         'queryId' => $queryID,
@@ -81,7 +81,7 @@ class MemoryDataGetter extends DataHelper
   }
 
   function __construct() {
-    $this->query = array('node_memory_MemAvailable', 'node_memory_MemTotal');
+    $this->query = array('node_memory_MemAvailable_bytes', 'node_memory_MemTotal_bytes');
   }
 
   protected function getCache() {
